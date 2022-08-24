@@ -1,0 +1,670 @@
+
+
+!Os métodos 
+
+module tudo
+
+	implicit none
+
+
+contains 
+
+!-------------------------------------------------------------------------------------------------------
+	
+    subroutine DecomposiLU(a, L, U, X, b, n)
+
+!----------------------------------------------------------------
+!  Método: Decomposicao LU Crout para achar a solucao do sistema
+!---------------------------------------------------------------
+!-------------------------------------------------------
+! Solução do sistema de equações lineares A*x=LU*x=b
+!-----------------------------------------------------------
+! input ...
+! U(n,n) - Matriz original U
+! L(n, n)   - Matriz coluna L
+! n      - ordem da matriz A(nxn) e b(nx1)
+! Saída:
+! X(n)   - soluções
+!
+!===========================================================
+
+        implicit none
+    
+        real(8), intent(in):: a(n, n), b(n)
+        real(8) :: s(n), y(n)
+        real(8), intent(out) :: L(n,n), U(n,n), X(n)
+        integer:: i, j, k, n 
+    
+        k=0
+
+    
+    
+        !Passo 1 e 2
+        do i=1, n
+    
+            L(i, 1)=a(i,1)
+            U(i,i)=1
+        end do
+       
+        !Passo 3 
+        do j=2, n
+        
+            U(1,j)=a(1,j)/L(1,1)
+        
+        end do
+    
+        !Passo 4
+        do i = 2, n
+       
+            do j = 2, i
+                s(:)=.0
+                do k=1, j-1
+                    s(k)=((L(i, k))*(U(k, j)))
+                end do
+        
+                L(i,j) = (a(i, j) - sum(s))
+        
+            end do
+      
+      
+            do j = i + 1, n
+                s(:)=.0
+                do k=1, i-1
+                    s(k)=(L(i, k)) * (U(k, j))
+                end do
+            
+                U(i,j) = (a(i,j)-sum(s))/L(i,i)
+            end do
+      
+        end do
+    
+        do i=1, n
+            s(:)=.0
+            do j=1, i-1
+                s(j)=(L(i,j)) * (y(j))
+            end do
+            
+            y(i) = (b(i)-sum(s))/L(i,i)
+            
+        end do
+      
+        i=n
+    
+        do while (i>=1)
+            s(:)=.0
+            j=4
+            do while (j>=1 .and. j>i)
+                s(j)=(U(i,j)) * (X(j))
+                j=j-1
+            end do
+            
+            X(i) = (y(i)-sum(s))/U(i,i)
+            i=i-1
+        end do
+    
+    
+    end subroutine DecomposiLU
+    
+
+
+
+!----------------------------------------------------------------
+
+
+
+    subroutine Gauss(a1,b1,x,n)
+
+!Solução do sistema
+
+
+!-----------------------------------------------------------
+! Método: chama a eliminação de Gauss com pivotamento
+!
+! input ...
+! a1(n,n) matriz [A]
+! b1(n)    matriz coluna [b]
+! n       é a ordem das matrizes [A(nxn)] & [b(nx1)]
+! Saída:
+! x(n)   Solução do sistema
+!
+!-----------------------------------------------------------
+
+        implicit none 
+        integer:: n
+        real(8), intent(in):: a1(n,n), b1(n)
+        real(8):: aux(n), a(n,n), b(n) 
+        real(8), intent(out)::x(n)
+        real(8) :: c, p, ss
+        integer::i 
+        integer::j 
+        integer::k 
+        integer::l
+
+
+        do i=1, n
+            do j=1, n
+                a(i,j)=a1(i,j)
+            enddo
+            b(i)=b1(i)
+        enddo
+
+
+        do k=1, n-1
+
+            do i=k,n                       
+                aux(i) = 0.0
+                do j=k,n                    
+                    aux(i) = max(aux(i),abs(a(i,j)))
+                end do
+            end do
+
+            p = abs(a(k,k)/aux(k))
+            l = k
+            do j=k+1,n
+                if(abs(a(j,k)/aux(j)) > p) then
+                    p = abs(a(j,k)/aux(j))
+                    l = j
+                end if
+            end do
+
+
+            if (l /= k) then
+                do j=k,n
+                    ss = a(k,j)
+                    a(k,j) = a(l,j)
+                    a(l,j) = ss
+                end do
+                ss = b(k)
+                b(k) = b(l)
+                b(l) = ss
+            end if
+
+
+            do i=k+1,n
+                c=a(i,k)/a(k,k)
+                a(i,k) = 0.0
+                b(i)=b(i)- c*b(k)
+                do j=k+1,n
+                    a(i,j) = a(i,j)-c*a(k,j)
+                end do
+            end do
+        end do
+
+
+        x(n) = b(n)/a(n,n)
+        do i=n-1,1,-1
+            c=0.0
+            do j=i+1,n
+                c= c + a(i,j)*x(j)
+            end do 
+            x(i) = (b(i)- c)/a(i,i)
+        end do
+
+    end subroutine Gauss
+
+!----------------------------------------------------------------
+
+
+    subroutine InversoGauss(a1,inv,n)
+
+!---------------------------------------------------------
+! inv(n, n) - matriz inversa de [A] por Gauss eliminação
+! Matriz original a1(n,n)  
+! Só olhar a ideia pra resolver Gauss
+!----------------------------------------------------------
+
+        implicit none 
+        integer:: n
+        real(8), intent(in):: a1(n,n) 
+        real(8), intent(out):: inv(n,n)
+        real(8):: L(n,n), U(n,n), b(n), x(n), a(n,n)
+        real(8):: d(n)
+        real(8):: aux
+        integer:: i, j, k
+
+    
+        
+
+        do i=1, n
+            do j=1, n
+                a(i,j)=a1(i,j)
+            end do
+        end do
+
+        l=0.0
+        
+        do k=1, n-1
+            do i=k+1,n
+                aux=a(i,k)/a(k,k)
+                L(i,k) = aux
+                do j=k+1,n
+                    a(i,j) = a(i,j)-aux*a(k,j)
+                end do
+            end do
+        end do
+
+
+        do i=1,n
+            L(i,i) = 1.0
+        end do
+
+        u=0.0
+        
+        do j=1,n
+            do i=1,j
+                U(i,j) = a(i,j)
+            end do
+        end do
+
+
+        b=0.0
+        
+        do k=1,n
+            b(k)=1.0
+            d(1) = b(1)
+
+            do i=2,n
+                d(i)=b(i)
+                do j=1,i-1
+                    d(i) = d(i) - L(i,j)*d(j)
+                end do
+            end do
+
+            x(n)=d(n)/U(n,n)
+            do i = n-1,1,-1
+                x(i) = d(i)
+                do j=n,i+1,-1
+                    x(i)=x(i)-U(i,j)*x(j)
+                end do
+                x(i) = x(i)/u(i,i)
+            end do
+
+            do i=1,n
+                inv(i,k) = x(i)
+            end do
+            b(k)=0.0
+        end do
+    end subroutine InversoGauss
+
+
+
+!----------------------------------------------------------------
+
+
+
+
+
+
+subroutine Calcerro(Xexato, Xapro, erro, n)  
+
+!===========================================================
+!  Método: Erro
+!===========================================================
+
+!Reais:--
+
+! Valor da soulução exata "Xexato"
+! Valor da soulução aproximada "Xapro"
+!Vetor erro(:) armazena a diferença entre a soluçao exata e aproximada "erro"
+
+    implicit none
+    
+    real(8):: Xexato(n), Xapro(n)
+    real(8), INTENT(out)::erro(n) !(out) Só vai alterar
+    
+    integer n, i                              
+                                  
+    do i=1, n
+    
+        erro(i)=Xexato(i)-Xapro(i)
+        
+    enddo
+
+end subroutine Calcerro
+
+
+
+
+
+
+
+
+!----------------------------------------------------------------
+
+
+subroutine CalcResiduo(a, erro, residuo, n)
+
+!===========================================================
+!  Método: Resíduo
+!===========================================================
+
+!Reais:
+
+!Vetor erro(:) passado
+!Matriz a(::)
+!tmp calcula cada valor da matriz residuo(:)
+! residuo(:) é o resultado da multiplicação das matrizes [residuo]=[a][erro]
+
+    implicit none
+    
+    real(8):: a(n,n)
+    real(8):: erro(n), tmp
+    real(8), INTENT(out):: residuo(n)
+    
+    integer n, i, j 
+
+    do j=1,n
+
+        tmp = 0.0
+    
+        do i=1,n
+    
+            tmp = tmp + a(j,i) * erro(i)
+      
+        enddo
+        residuo(j) = tmp
+    enddo
+
+end subroutine CalcResiduo
+
+
+
+!----------------------------------------------------------------
+
+
+subroutine InverGJ(a1,b,n)
+ 
+! Método para achar matriz inrvesa por matriz Gauss-Jordan
+!--------------------------------------------------------
+!  O método acha o Inverso da matriz [a1], que é [b(:)]
+!  
+!-----------------------------------------------------------
+ 
+    implicit none 
+ 
+    
+    integer ::j
+    integer :: i
+    integer ::aux
+    integer ::l
+    integer ::m
+    integer ::n
+    integer ::k
+    
+ 
+    real(8):: a(n,n), a1(n,n)
+    
+    real(8):: numb, numb2, dum 
+ 
+    real(8), intent(out):: b(n,n)
+
+
+
+    do i=1, n
+        do j=1, n
+            a(i,j)=a1(i,j)
+        enddo
+    enddo
+
+
+    do i = 1,n
+        do j = 1,n
+            b(i,j) = 0.0
+        end do
+        b(i,i) = 1.0
+    end do
+
+    do i = 1,n 
+    
+        numb = a(i,i)
+        do j = i,n
+            if (a(j,i).gt.numb) then
+                numb = a(j,i)
+                aux = j
+            end if
+        end do
+
+        if (numb.gt.a(i,i)) then
+            do k = 1,n
+                numb2 = a(i,k) ! matrix a()
+                a(i,k) = a(aux,k)
+                a(aux,k) = numb2
+                numb2 = b(i,k) ! matrix b()
+                b(i,k) = b(aux,k)
+                b(aux,k) = numb2
+            end do
+        end if
+
+
+        numb2 = a(i,i)
+        do j = 1,n
+            a(i,j) = a(i,j)/numb2
+            b(i,j) = b(i,j)/numb2
+        end do
+        
+        do j = i+1,n
+            numb2 = a(j,i)
+            do k = 1,n
+                a(j,k) = a(j,k) - numb2*a(i,k)
+                b(j,k) = b(j,k) - numb2*b(i,k)
+            end do
+        end do
+    end do
+
+    do i = 1,n-1
+        do j = i+1,n
+            numb2 = a(i,j)
+            do l = 1,n
+                a(i,l) = a(i,l)-numb2*a(j,l)
+                b(i,l) = b(i,l)-numb2*b(j,l)
+            end do
+        end do
+    end do
+
+end subroutine InverGJ
+
+
+!--------------------------------------------------------------
+
+
+
+
+
+
+subroutine GJ(a1, b1, s, n)
+
+    
+!-------------------------------------------------------------
+!  O método acha a solução do sistema [a1][x]=[b1] por Gauss-Jordan
+!-----------------------------------------------------------
+
+!reais
+! Matriz principal usada [a1] de [a1][x]=[b1]
+
+! Matriz coluna [b1] de [a1][x]=[b1]
+
+! Aqui fica passamos [a]=[a1] e [b]=[b1]
+
+! Aqui s(:) é a solução
+
+! troca
+
+! elim
+
+! inteiros
+! i, k, pi, j
+
+
+    implicit none 
+
+    integer, intent(in) :: n
+    real(8):: a(n,n), a1(n,n), b1(n), b(n), s(n)
+ 
+
+    real(8) :: elim ! Auxilia na "eliminação"
+
+    integer :: i  ! Usado como pivô nas linhas da matriz [a]
+    integer :: k ! Auxilia na troca de linhas 
+    integer :: j  ! Usado como pivô nas linhas da matriz [a]
+    integer :: pi  ! Usado como pivô nas colunas da matriz [a]
+
+    real(8) :: troca ! Auxilia na troca de "linhas"
+
+  
+
+
+    do i=1, n
+    
+        do j=1, n
+        
+            a(i,j)=a1(i,j)
+        end do
+        b(i)=b1(i)
+    end do
+        
+        
+    do i= 1, n
+
+        k = i 
+
+
+        do j = i + 1,n
+            if (abs(a(j, i)) > abs(a(k, i))) then
+                k = j
+            end if
+        end do
+
+
+        if (k /= i) then
+            do pi = 1, n
+                troca = a(k, pi)
+                a(k, pi) = a(i, pi)
+                a(i, pi) = troca
+            end do
+            troca = b(k)
+            b(k) = b(i)
+            b(i) = troca
+        end if
+
+
+
+        do j = 1, n
+            if (j /= i) then
+                elim = -a(j, i)/a(i,i)
+                do pi = 1, n
+                    a(j, pi) = a(i, pi) * elim + a(j, pi)
+                end do
+                b(j) = b(i) * elim + b(j)
+            end if
+        end do
+
+
+    end do
+
+
+    do i = 1, n
+        s(i) = b(i) / a(i, i)
+        a(i, i) = 1.
+    end do
+
+
+end subroutine GJ
+
+
+!-------------------------------------------------------------------------------------
+
+!------------------------------------------
+!Norma infinita de um vetor
+!-------------------------------------------
+
+real(8) function norm_v(n,vec)
+
+! Inteiro:--
+
+! Dimensão do vetor (nxn)(número de linhas e colunas)
+
+!Reais:--
+
+! Vetor passado do programa principal "vec(:)"
+
+! Vetor, "v(:)", que guarda o modulo de cada vec(i) 
+
+
+     implicit none
+     integer :: i, n             
+     real(8) :: vec(n), v(n)        
+
+     ! Implementação do código
+     
+     
+     do i=1, n
+     
+        v(i)=abs(vec(i))
+     enddo
+     
+     norm_v=v(1)
+     
+     do i=1,n-1
+     
+        if(v(i+1)>norm_v) then 
+        
+        norm_v=v(i+1)
+            
+        endif
+        
+     enddo
+
+     return 
+     
+end function norm_v
+
+!-------------------------------------------------------------------------------------
+
+!------------------------------------------
+!Norma infinita de uma matriz
+!-------------------------------------------
+
+
+real(8) function norm_m(m,n,mat)
+
+!Inteiros:
+
+! Dimensões da matriz (m,n)(número de linhas/colunas)
+
+!Reis:--
+
+! Matriz passada do programa principal m(:)
+! cada v(i) guarda o modulo da soma de todos as entradas de cada coluna da matriz mat(:)
+
+     implicit none
+     
+     integer :: m, n, i           
+     real(8) :: mat(m,n), v(m)       
+
+     ! Implementação do código
+     
+     do i=1, m
+        v(i)= sum(abs(mat(i,:)))   
+     enddo
+    
+    norm_m = maxval(v) 
+        
+     return
+ 
+end function norm_m
+
+!-------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+!-------------------------------------------------------------------------------------------------------
+
+
+
+end module tudo
+
+
