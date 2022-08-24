@@ -1,0 +1,1523 @@
+
+
+!Os métodos 
+
+module tudo
+
+	implicit none
+
+
+contains 
+
+!-------------------------------------------------------------------------------------------------------
+	subroutine Bisseccao()
+	
+	
+! Para o "MÃ©todo da BissecÃ§Ã£o" (Que e obter a soluÃ§Ã£o de uma equaÃ§Ã£o nÃ£o linear f(x)=0), temos que ter:
+
+!Inteiro:--
+
+! A quantidade maxima, "itmax",  de iteracoes do programa (para o laco)
+
+!Reais:--
+
+! Os valores de [a,b] ! "intervalo" no qual "se encontra a solucao"
+
+
+! 3) A tolerÃ¢ncia, "tol_ini", em f(x) (Ou seja, assumir um valor aproximado de zero para a soluÃ§Ã£o - tipo, 0,0001)
+
+! TolerÃ¢ncia da solucao: tipo, "Xn=(a+b)/2"
+
+! E, por ultimo, a tolerancia: "tol=(b-a)/2"  na funÃ§Ã£o para cada iteracao (ela vai ser comparada a tolerancia de (3))
+! E temos a funcao considerada "F"
+
+	
+		
+		implicit none 
+		real(8):: a, b, Xn, itmax, tol, tol_ini
+        
+        integer:: i !vai ser usado no "laco"
+        
+        
+        
+        interface 
+        
+            function F(x)
+                real(8) :: x
+            end  function
+
+        end interface
+        
+            print*, "Diga o intervalo em que se encontra a solução [a,b]: "
+            print*, "Diga o valor de a: "
+            read*, a
+            print*, "Diga o valor de b: "
+            read*, b
+            
+            print*, "Diga o númeor máximo de iteraçõs: "
+            read*, itmax
+            
+            print*, "Diga a tolerancia máxima: "
+            read*, tol_ini
+        
+        	if(F(a)*F(b)>0) then
+
+          	 	print*, "Erro: A funÃ§Ã£o tem o mesmo sinal"
+           	    
+        	else
+            	write(*,*) '         [i]     a                b           Xn(Soulcoes)         f(Xn)         TolerÃ¢ncia'
+        
+            	do i=1, 20, 1
+
+                 	Xn=(a+b)/2
+
+                 	tol=(b-a)/2
+                 
+                 	print*, i, a, b, Xn, F(Xn), tol
+                 
+                 	if(F(Xn)==0)  then
+                 
+                 		print*, "Uma soluÃ§Ã£o foi encontrada [x]= ", Xn
+                 		exit
+                 	end if
+
+                 	if(i==itmax) then
+                 
+                 		print*, "Nenhuma soluÃ§Ã£o encontrada"
+                 		exit
+                 	end if
+                 
+                 	if(tol<tol_ini)  then
+                 	
+                 	    write(*, '(a, 1x, f13.2)') "SoluÃ§Ã£o Ã© [x]=: ", Xn
+                 		exit
+                 	end if
+
+                	if(F(a)*F(Xn)<0) then
+                 		b=Xn
+                 	else
+                 		a=Xn
+                 	end if
+            	 end do
+          end if
+	end subroutine Bisseccao
+	
+!-------------------------------------------------------------------------------------------------------
+	
+	
+	subroutine RegulaFalsi()
+        
+
+! Para o "Metodo Regula Falsi" (Que e obter a soluÃ§Ã£o de uma equacao nao linear f(x)=0) temos que ter:
+
+!inteiro:--
+
+! A quantidade maxima, "itmax",  de iteracoes do programa (para o for)
+
+!Reais:--
+
+! Intervalo que se encontra a solucao "[a,b]"
+
+! 3) A tolerancia em f(x): "tol_ini". (Ou seja, assumir um valor aproximado de zero para a solucao - tipo, 0,0001)
+
+! Toleracia da solucao: tipo, "Xn=(af(b)-bf(a))/(f(a)-f(b))"
+
+! E, por ultimo, a tolerancia: "tol=(b-a)/2"  na funcao para cada iteracao (ela vai ser comparada a tolerancia de (3))
+! E temos a funcao considerada "F"
+
+        implicit none
+        
+        real(8):: x, tol_ini, tol, a, b
+        
+        integer:: itmax, i ! SÃ£o os laÃ§os 
+        
+        
+        
+        interface 
+        
+            function F(x)
+                real(8) :: x
+            end  function
+
+        end interface
+        
+        print*, "Diga o intervalo em que se encontra a solução [a,b]: "
+        print*, "Diga o valor de a: "
+        read*, a
+        print*, "Diga o valor de b: "
+        read*, b
+            
+        print*, "Diga o númeor máximo de iteraçõs: "
+        read*, itmax
+            
+        print*, "Diga a tolerancia máxima: "
+        read*, tol_ini
+        
+
+        
+        if(F(a)*F(b)>0) then
+        
+            print*, "Nao temos solucao nesse intervalo"
+        
+        else
+
+            write(*,*) "         [i]        a               b               X              F(X)           tolerancia"
+            
+            do i=1, itmax
+            
+               x=(a*F(b)-b*F(a))/(F(b)-F(a))
+               
+               tol=(b-a)/2
+               
+               print*, i, a, b, x, F(x), tol
+               
+               if(F(x)==0) then
+               
+                    write(*, '(a, 1x, f13.2)') "A soluÃ§Ã£o Ã© [x]= ", x
+                    exit
+               end if
+               
+               if(tol<tol_ini) then
+                    write(*, '(a, 1x, f13.2)') "SoluÃ§Ã£o Ã© [x]= ", x
+                    exit
+               end if
+               
+               if(i==itmax)  then
+                    exit
+               end if
+               
+               if(F(a)*F(x)<0)  then
+               
+                    b=x
+               else
+                    a=x
+               end if
+         end do
+      end if
+    end subroutine RegulaFalsi
+
+!-------------------------------------------------------------------------------------------------------
+
+    subroutine MetNewton(tol_ini, x)
+ 
+! Para este "MÃ©todo de Newton" (Que e obter a solucao de uma equaco nÃ£o linear f(x)=0)  precisamos das seguintes variÃ¡veis ou entradas
+
+!Reais:----
+
+! Uma funcao "F" 
+
+! Calculo da derivada da funcao "F":  "Fder"
+
+! Uma entrada para o valor de X inicial "x" (o chute)
+
+! Os "Xi" sao valores de x de forma que: temos Xn e Xn+1=Xi
+
+! A tolerancia ou erro maximo "tol_ini"
+
+! A tolerancia a cada iteraÃ§Ã£o i "tol"
+
+
+
+
+
+         implicit none
+         
+         real(8) ::x, xi, Xsolucao, tol_ini, tol
+         
+         integer:: i ! i = iteracoes
+         
+         
+         
+        interface 
+            
+            function Fder(x)
+                real(8) :: x
+            end  function
+            
+            function F(x)
+                real(8) :: x
+            end  function
+
+        end interface
+        
+        
+        
+        i=1 ! inicializa as iteracao
+        
+        xi=x-(F(x)/(Fder(x))) ! Calcula x2 sendo x1=x
+        
+        tol=(xi-x)/x ! Iniciando o calculo da tolerancia para cada iteracao i
+        
+        do while(tol>=tol_ini) 
+        
+            i=i+1
+            xi=x-(F(x)/(Fder(x)))
+         
+            tol=(xi-x)/x
+         
+            if(tol<tol_ini)   then
+
+                Xsolucao=xi
+                exit           ! para o comando (do)
+            end if
+        
+            x=xi
+        end do
+        
+        print*, 'Temos:', i, 'iteracoes '
+        write(*, '(a, 1x, f13.5)') ' A solucao é [t]= ',  Xsolucao
+        
+        
+    end subroutine MetNewton
+    
+    
+!-------------------------------------------------------------------------------------------------------   
+    
+    subroutine Secante() 
+ 
+ 
+! Para este "MÃ©todo da Secante" (Que Ã© obter a soluÃ§Ã£o de uma equaÃ§Ã£o nÃ£o linear f(x)=0) precisamos das seguintes variÃ¡veis ou entradas
+
+!Reais:--
+
+! Uma funcao "F"
+
+! Duas entradas para o valor de "Xa" e "Xb" iniciais (que sÃ£o dois pontos na vizinhanÃ§a da raiz/soluÃ§Ã£o)
+
+! Os "Xi" sÃ£o valores de x de forma que: temos Xn e Xn+1=Xi
+
+! A tolerancia ou erro maximo "tol_ini"
+
+! A tolerancia a cada iteraÃ§Ã£o i "tol"
+
+! Inteiro:--
+
+! O numero maximo de iteraÃ§Ãµs "itmax"
+ 
+         implicit none
+         
+         real(8):: Xa, Xb, xi, Xsolucao, tol_ini, tol
+         
+         integer:: i, itmax
+         
+         
+         interface 
+            
+            function F(x)
+                real(8) :: x
+            end  function
+
+        end interface
+         
+        
+        print*, "Diga o intervalo em que se encontra a solução [a,b]: "
+        print*, "Diga o valor de a: "
+        read*, Xa
+        print*, "Diga o valor de b: "
+        read*, Xb
+            
+        print*, "Diga o númeor máximo de iteraçõs: "
+        read*, itmax
+            
+        print*, "Diga a tolerancia máxima: "
+        read*, tol_ini
+        
+         
+         
+         
+        do i=1, itmax
+         
+         xi= Xb - (F(Xb)*(Xa-Xb))/(F(Xa)-F(Xb))
+         
+         tol=(Xb-Xa)/Xa
+         
+         if(tol<tol_ini)   then
+
+              Xsolucao=xi
+              exit           ! para o comando (do)
+         end if
+         
+         Xa=Xb
+         Xb=xi
+
+        end do
+        
+        if(i==itmax)   then
+        
+        print*, "NÃ£o tem soluÃ§Ã£o"
+        
+        else
+        
+        write(*, '(a, 1x, f13.2)') "A soluÃ§Ã£o Ã© [x]= ", Xsolucao
+        
+        end if
+    end subroutine Secante
+         
+         
+         
+!-------------------------------------------------------------------------------------------------------   
+    
+    !subroutine PontFixo() 
+    
+
+    
+! Metodo de "Iteracao do Ponto Fixo" (Que e obter a solucao de uma equacao nÃ£o linear: f(x)=0)
+! Aqui consideramos a(s) possível(i)s funcao/funcoes para ser(em) usada(s) na sulucao da equacao f(x)=0
+! Pegamos as possíveis funcoes:
+
+! Reais:--
+
+! 'F' e sua derivada : 'FDeriva'
+
+! Reais:--
+
+! Duas entradas para o valor de "x" e "x2" iniciais (que saoo dois pontos na vizinhanca da raiz/solucao)
+
+! A tolerancia ou erro maximo "tol_ini"
+
+! A tolerancia a cada iteracao i "tol"
+
+!Inteiro: i, itmax
+
+! O numero maximo de iteracao "itmax"
+
+        !implicit none
+         
+        !real(8):: x, x2, xi, Xsolucao,tol_ini, tol
+        !integer:: i, itmax
+         
+         
+        !interface
+        
+! Aqui deve ser considerado funções possíveis para calcular a solucao
+
+                
+        !function F(x)
+                !real(8) :: x
+            !end  function
+            
+           !function FDeriva(x)
+                !real(8) :: x
+            !end  function
+            
+
+        !end interface
+        
+        
+        !print*, "Diga o intervalo em que se encontra a solução [a,b]: "
+        !print*, "Diga o valor de a: "
+        !read*, x
+        !print*, "Diga o valor de b: "
+        !read*, x2
+            
+        !print*, "Diga o númeor máximo de iteraçõs: "
+        !read*, itmax
+            
+        !print*, "Diga a tolerancia máxima: "
+        !read*, tol_ini
+        
+    
+
+	    !if (abs(FDeriva(x))<1 .and. abs(FDeriva(x2))<1) then 
+
+		    !do i=1, itmax
+         
+         		!xi=F11(x)
+         
+        		!tol=abs((xi-x)/x)
+         
+         		!if(tol<tol_ini)   then
+
+              			!Xsolucao=xi
+              			!exit       ! para o comando (do)
+         		!endif
+        
+        		!x=xi
+        	!end do
+
+	    !endif
+	
+        
+        !print*, 'A solucao com', i, 'interações: '
+        
+        !write(*, '(a, 1x, f13.5)') '[x]=', Xsolucao 
+        
+        
+
+    !end subroutine PontFixo
+
+
+
+!-------------------------------------------------------------------------------------------------------   
+
+
+
+
+    subroutine DecomposiLU(a, L, U, X, b, n)
+
+!----------------------------------------------------------------
+!  Método: Decomposicao LU Crout para achar a solucao do sistema
+!---------------------------------------------------------------
+!-------------------------------------------------------
+! Solução do sistema de equações lineares A*x=LU*x=b
+!-----------------------------------------------------------
+!  
+! U(n,n) - Matriz original U
+! L(n, n)   - Matriz coluna L
+! n      - ordem da matriz A(nxn) e b(nx1)
+! Saída:
+! X(n)   - soluções
+!
+!===========================================================
+
+        implicit none
+         real(8) :: s(n)
+        real(8), intent(in):: a(n, n), b(n)
+        real(8) :: y(n)
+        real(8), intent(out) :: L(n,n), U(n,n), X(n)
+        integer:: i, j, k, n 
+    
+        k=0
+
+    
+    
+        !Passo 1 e 2
+        do i=1, n
+    
+            L(i, 1)=a(i,1)
+            U(i,i)=1
+        end do
+       
+        !Passo 3 
+        do j=2, n
+        
+            U(1,j)=a(1,j)/L(1,1)
+        
+        end do
+    
+        !Passo 4
+        do i = 2, n
+       
+            do j = 2, i
+                s(:)=.0
+                do k=1, j-1
+                    s(k)=((L(i, k))*(U(k, j)))
+                end do
+        
+                L(i,j) = (a(i, j) - sum(s))
+        
+            end do
+      
+      
+            do j = i + 1, n
+                s(:)=.0
+                do k=1, i-1
+                    s(k)=(L(i, k)) * (U(k, j))
+                end do
+            
+                U(i,j) = (a(i,j)-sum(s))/L(i,i)
+            end do
+      
+        end do
+    
+        do i=1, n
+            s(:)=.0
+            do j=1, i-1
+                s(j)=(L(i,j)) * (y(j))
+            end do
+            
+            y(i) = (b(i)-sum(s))/L(i,i)
+            
+        end do
+      
+        i=n
+    
+        do while (i>=1)
+            s(:)=.0
+            j=4
+            do while (j>=1 .and. j>i)
+                s(j)=(U(i,j)) * (X(j))
+                j=j-1
+            end do
+            
+            X(i) = (y(i)-sum(s))/U(i,i)
+            i=i-1
+        end do
+    
+    
+    end subroutine DecomposiLU
+    
+
+
+
+!----------------------------------------------------------------
+
+
+
+    subroutine Gauss(a1,b1,x,n)
+
+!Solução do sistema
+
+
+!-----------------------------------------------------------
+! Método: chama a eliminação de Gauss com pivotamento
+!
+! input ...
+! a1(n,n) matriz [A]
+! b1(n)    matriz coluna [b]
+! n       é a ordem das matrizes [A(nxn)] & [b(nx1)]
+! Saída:
+! x(n)   Solução do sistema
+!
+!-----------------------------------------------------------
+
+        implicit none 
+        integer:: n
+        real(8), intent(in):: a1(n,n), b1(n)
+        real(8):: aux(n), a(n,n), b(n) 
+        real(8), intent(out)::x(n)
+        real(8) :: c, p, ss
+        integer::i 
+        integer::j 
+        integer::k 
+        integer::l
+
+
+        do i=1, n
+            do j=1, n
+                a(i,j)=a1(i,j)
+            enddo
+            b(i)=b1(i)
+        enddo
+
+
+        do k=1, n-1
+
+            do i=k,n                       
+                aux(i) = 0.0
+                do j=k,n                    
+                    aux(i) = max(aux(i),abs(a(i,j)))
+                end do
+            end do
+
+            p = abs(a(k,k)/aux(k))
+            l = k
+            do j=k+1,n
+                if(abs(a(j,k)/aux(j)) > p) then
+                    p = abs(a(j,k)/aux(j))
+                    l = j
+                end if
+            end do
+
+
+            if (l /= k) then
+                do j=k,n
+                    ss = a(k,j)
+                    a(k,j) = a(l,j)
+                    a(l,j) = ss
+                end do
+                ss = b(k)
+                b(k) = b(l)
+                b(l) = ss
+            end if
+
+
+            do i=k+1,n
+                c=a(i,k)/a(k,k)
+                a(i,k) = 0.0
+                b(i)=b(i)- c*b(k)
+                do j=k+1,n
+                    a(i,j) = a(i,j)-c*a(k,j)
+                end do
+            end do
+        end do
+
+
+        x(n) = b(n)/a(n,n)
+        do i=n-1,1,-1
+            c=0.0
+            do j=i+1,n
+                c= c + a(i,j)*x(j)
+            end do 
+            x(i) = (b(i)- c)/a(i,i)
+        end do
+
+    end subroutine Gauss
+
+!----------------------------------------------------------------
+
+
+    subroutine InversoGauss(a1,inv,n)
+
+!---------------------------------------------------------
+! inv(n, n) - matriz inversa de [A] por Gauss eliminação
+! Matriz original a1(n,n)  
+! Só olhar a ideia pra resolver Gauss
+!----------------------------------------------------------
+
+        implicit none 
+        integer:: n
+        real(8), intent(in):: a1(n,n) 
+        real(8), intent(out):: inv(n,n)
+        real(8):: L(n,n), U(n,n), b(n), x(n), a(n,n)
+        real(8):: d(n)
+        real(8):: aux
+        integer:: i, j, k
+
+    
+        
+
+        do i=1, n
+            do j=1, n
+                a(i,j)=a1(i,j)
+            end do
+        end do
+
+        l=0.0
+        
+        do k=1, n-1
+            do i=k+1,n
+                aux=a(i,k)/a(k,k)
+                L(i,k) = aux
+                do j=k+1,n
+                    a(i,j) = a(i,j)-aux*a(k,j)
+                end do
+            end do
+        end do
+
+
+        do i=1,n
+            L(i,i) = 1.0
+        end do
+
+        u=0.0
+        
+        do j=1,n
+            do i=1,j
+                U(i,j) = a(i,j)
+            end do
+        end do
+
+
+        b=0.0
+        
+        do k=1,n
+            b(k)=1.0
+            d(1) = b(1)
+
+            do i=2,n
+                d(i)=b(i)
+                do j=1,i-1
+                    d(i) = d(i) - L(i,j)*d(j)
+                end do
+            end do
+
+            x(n)=d(n)/U(n,n)
+            do i = n-1,1,-1
+                x(i) = d(i)
+                do j=n,i+1,-1
+                    x(i)=x(i)-U(i,j)*x(j)
+                end do
+                x(i) = x(i)/u(i,i)
+            end do
+
+            do i=1,n
+                inv(i,k) = x(i)
+            end do
+            b(k)=0.0
+        end do
+    end subroutine InversoGauss
+
+
+
+!----------------------------------------------------------------
+
+
+
+
+
+
+subroutine Calcerro(Xexato, Xapro, erro, n)  
+
+!===========================================================
+!  Método: Erro
+!===========================================================
+
+!Reais:--
+
+! Valor da soulução exata "Xexato"
+! Valor da soulução aproximada "Xapro"
+!Vetor erro(:) armazena a diferença entre a soluçao exata e aproximada "erro"
+
+    implicit none
+    
+    real(8):: Xexato(n), Xapro(n)
+    real(8), INTENT(out)::erro(n) !(out) Só vai alterar
+    
+    integer n, i                              
+                                  
+    do i=1, n
+    
+        erro(i)=Xexato(i)-Xapro(i)
+        
+    enddo
+
+end subroutine Calcerro
+
+
+
+
+
+
+
+
+!----------------------------------------------------------------
+
+
+subroutine CalcResiduo(a, erro, residuo, n)
+
+!===========================================================
+!  Método: Resíduo
+!===========================================================
+
+!Reais:
+
+!Vetor erro(:) passado
+!Matriz a(::)
+!tmp calcula cada valor da matriz residuo(:)
+! residuo(:) é o resultado da multiplicação das matrizes [residuo]=[a][erro]
+
+    implicit none
+    
+    real(8):: a(n,n)
+    real(8):: erro(n), tmp
+    real(8), INTENT(out):: residuo(n)
+    
+    integer n, i, j 
+
+    do j=1,n
+
+        tmp = 0.0
+    
+        do i=1,n
+    
+            tmp = tmp + a(j,i) * erro(i)
+      
+        enddo
+        residuo(j) = tmp
+    enddo
+
+end subroutine CalcResiduo
+
+
+
+!----------------------------------------------------------------
+
+
+subroutine InverGJ(a1,b,n)
+ 
+! Método para achar matriz inrvesa por matriz Gauss-Jordan
+!--------------------------------------------------------
+!  O método acha o Inverso da matriz [a1], que é [b(:)]
+!  
+!-----------------------------------------------------------
+ 
+    implicit none 
+ 
+    
+    integer ::j
+    integer :: i
+    integer ::aux
+    integer ::l
+    integer ::m
+    integer ::n
+    integer ::k
+    
+ 
+    real(8):: a(n,n), a1(n,n)
+    
+    real(8):: numb, numb2, dum 
+ 
+    real(8), intent(out):: b(n,n)
+
+
+
+    do i=1, n
+        do j=1, n
+            a(i,j)=a1(i,j)
+        enddo
+    enddo
+
+
+    do i = 1,n
+        do j = 1,n
+            b(i,j) = 0.0
+        end do
+        b(i,i) = 1.0
+    end do
+
+    do i = 1,n 
+    
+        numb = a(i,i)
+        do j = i,n
+            if (a(j,i).gt.numb) then
+                numb = a(j,i)
+                aux = j
+            end if
+        end do
+
+        if (numb.gt.a(i,i)) then
+            do k = 1,n
+                numb2 = a(i,k) ! matrix a()
+                a(i,k) = a(aux,k)
+                a(aux,k) = numb2
+                numb2 = b(i,k) ! matrix b()
+                b(i,k) = b(aux,k)
+                b(aux,k) = numb2
+            end do
+        end if
+
+
+        numb2 = a(i,i)
+        do j = 1,n
+            a(i,j) = a(i,j)/numb2
+            b(i,j) = b(i,j)/numb2
+        end do
+        
+        do j = i+1,n
+            numb2 = a(j,i)
+            do k = 1,n
+                a(j,k) = a(j,k) - numb2*a(i,k)
+                b(j,k) = b(j,k) - numb2*b(i,k)
+            end do
+        end do
+    end do
+
+    do i = 1,n-1
+        do j = i+1,n
+            numb2 = a(i,j)
+            do l = 1,n
+                a(i,l) = a(i,l)-numb2*a(j,l)
+                b(i,l) = b(i,l)-numb2*b(j,l)
+            end do
+        end do
+    end do
+
+end subroutine InverGJ
+
+
+!--------------------------------------------------------------
+
+
+
+
+
+
+subroutine GJ(a1, b1, s, n)
+
+    
+!-------------------------------------------------------------
+!  O método acha a solução do sistema [a1][x]=[b1] por Gauss-Jordan
+!-----------------------------------------------------------
+
+!reais
+! Matriz principal usada [a1] de [a1][x]=[b1]
+
+! Matriz coluna [b1] de [a1][x]=[b1]
+
+! Aqui fica passamos [a]=[a1] e [b]=[b1]
+
+! Aqui s(:) é a solução
+
+! troca
+
+! elim
+
+! inteiros
+! i, k, pi, j
+
+
+    implicit none 
+
+    integer, intent(in) :: n
+    real(8):: a(n,n), a1(n,n), b1(n), b(n), s(n)
+ 
+
+    real(8) :: elim ! Auxilia na "eliminação"
+
+    integer :: i  ! Usado como pivô nas linhas da matriz [a]
+    integer :: k ! Auxilia na troca de linhas 
+    integer :: j  ! Usado como pivô nas linhas da matriz [a]
+    integer :: pi  ! Usado como pivô nas colunas da matriz [a]
+
+    real(8) :: troca ! Auxilia na troca de "linhas"
+
+  
+
+
+    do i=1, n
+    
+        do j=1, n
+        
+            a(i,j)=a1(i,j)
+        end do
+        b(i)=b1(i)
+    end do
+        
+        
+    do i= 1, n
+
+        k = i 
+
+
+        do j = i + 1,n
+            if (abs(a(j, i)) > abs(a(k, i))) then
+                k = j
+            end if
+        end do
+
+
+        if (k /= i) then
+            do pi = 1, n
+                troca = a(k, pi)
+                a(k, pi) = a(i, pi)
+                a(i, pi) = troca
+            end do
+            troca = b(k)
+            b(k) = b(i)
+            b(i) = troca
+        end if
+
+
+
+        do j = 1, n
+            if (j /= i) then
+                elim = -a(j, i)/a(i,i)
+                do pi = 1, n
+                    a(j, pi) = a(i, pi) * elim + a(j, pi)
+                end do
+                b(j) = b(i) * elim + b(j)
+            end if
+        end do
+
+
+    end do
+
+
+    do i = 1, n
+        s(i) = b(i) / a(i, i)
+        a(i, i) = 1.
+    end do
+
+
+end subroutine GJ
+
+
+!-------------------------------------------------------------------------------------
+
+!------------------------------------------
+!Norma infinita de um vetor
+!-------------------------------------------
+
+real(8) function norm_v(n,vec)
+
+! Inteiro:--
+
+! Dimensão do vetor (nxn)(número de linhas e colunas)
+
+!Reais:--
+
+! Vetor passado do programa principal "vec(:)"
+
+! Vetor, "v(:)", que guarda o modulo de cada vec(i) 
+
+
+     implicit none
+     integer :: i, n             
+     real(8) :: vec(n), v(n)        
+
+     ! Implementação do código
+     
+     
+     do i=1, n
+     
+        v(i)=abs(vec(i))
+     enddo
+     
+     norm_v=v(1)
+     
+     do i=1,n-1
+     
+        if(v(i+1)>norm_v) then 
+        
+        norm_v=v(i+1)
+            
+        endif
+        
+     enddo
+
+     return 
+     
+end function norm_v
+
+!-------------------------------------------------------------------------------------
+
+!------------------------------------------
+!Norma infinita de uma matriz
+!-------------------------------------------
+
+
+real(8) function norm_m(m,n,mat)
+
+!Inteiros:
+
+! Dimensões da matriz (m,n)(número de linhas/colunas)
+
+!Reis:--
+
+! Matriz passada do programa principal m(:)
+! cada v(i) guarda o modulo da soma de todos as entradas de cada coluna da matriz mat(:)
+
+     implicit none
+     
+     integer :: m, n, i           
+     real(8) :: mat(m,n), v(m)       
+
+     ! Implementação do código
+     
+     do i=1, m
+        v(i)= sum(abs(mat(i,:)))   
+     enddo
+    
+    norm_m = maxval(v) 
+        
+     return
+ 
+end function norm_m
+
+!-------------------------------------------------------------------------------------------------------
+
+
+
+   
+
+
+
+    subroutine MinQuadrado()
+ 
+ ! Para este "Método Minimos" Quadrados precisamos das seguintes variaáveis ou entradas
+
+! y = a1*x + a0 que melhor se ajusta aos n pontos do conjunto de dados.
+
+! Variáveis de entrada:
+
+! x Vetor com as coordenadas x dos pontos.
+
+! y Vetor com as coordenada y dos pontos.
+
+! O numero maximo de iteraçõs
+
+! Variáveis de saída:
+
+! a1 Coeficiente a1.
+! a0 Coeficiente a0.
+
+
+! Nesse programa, você acha a equação da reta y = a1*x + a0 que mais se adpta aos pontos dados dos vetores x e y
+
+
+         implicit none
+
+         real(8), allocatable :: x(:), y(:)
+
+         real(8):: Sx, Sy, Sxy, Sxx, a0, a1
+
+         integer:: i, j, a, b
+
+         print*, "Diga o tamanho de x e y (quantidade de pontos)"
+
+         read*, a
+
+         allocate(x(a), y(a))
+
+         print*, "Forneça os pontos para achar a quação: "
+
+        do i=1, a
+
+            print*, "Diga x e y: "
+
+            read*, x(i), y(i)
+
+        end do
+
+        if(a/=a)   then
+
+            print*, "O número de elemntos de x deve ser igual ao de y - Não tem solução"
+
+        else
+
+            Sx = sum(x)
+
+            Sy = sum(y)
+
+            Sxy = sum((/(x(j) * y(j), j=1,a)/))
+
+            Sxx = sum((/(x(j)**2, j=1,a)/))
+
+            a1 = (a*Sxy-Sx*Sy)/(a*Sxx-(Sx)**2) ! (Sx)**2 = (Sx)^2
+            a0 = (Sxx*Sy - Sxy*Sx)/(a*Sxx-(Sx)**2)
+        endif
+
+        print*, "A equação fica: ",a1, "x + ",a0
+
+        write(*, '(a, 1x, f13.5)') 'Sx =', Sx
+
+       write(*, '(a, 1x, f13.5)') "Sy = ", Sy
+
+        write(*, '(a, 1x, f13.5)')"Sxy = ", Sxy
+
+        write(*, '(a, 1x, f13.5)') "Sxx = ", Sxx
+        
+    end subroutine MinQuadrado
+    
+    
+
+
+!-------------------------------------------------------------------------------------------------------
+
+
+subroutine RegressaoPolinomial()
+
+!------------------------------------------
+!Método Regressão Polinomial
+!-------------------------------------------
+
+!Inteiro:--
+
+! n é o número de pontos x(n) e m é o grau do "polinomio P(x)"
+
+!Reias:--
+
+! p(m+1) são os coeficientes a_i de P(x)
+
+! [a] é a matriz auxiliar usada pra achar os coeficintes ai="p(m+1)" do polinomio
+
+! O vetor [b] é usado pra auxiliar a matriz [a]
+
+    integer, parameter:: m=4, n=16 ! n é o número de pontos x(n) e m é o grau do "polinomio P(x)"
+    real(8):: x(n), y(n), xsum(2*m), a(m+1, m+1), b(m+1), p(m+1) ! p(m+1) são os coeficientes a_i de P(x)
+    integer:: i,j,k
+    
+    data (x(i),   i=1,n) /  0.0,  0.4,  0.8, 1.2, 1.6, 2.0, 2.4, 2.8, 3.2, 3.6, 4.0, 4.4, 4.8, 5.2, 5.6, 6.0 /
+    
+    data (y(i),   i=1,n) /  0.0,  3.0,  4.5, 5.8, 5.9, 5.8, 6.2, 7.4, 9.6, 15.6, 20.7, 26.7, 31.1, 35.6, 39.3, 41.5 /
+    
+    
+    do i=1, 2*m
+    
+        xsum(i)=sum((/(x(k)**i, k=1,n)/))
+    enddo
+    
+    
+    a(1,1)=n
+    b(1)=sum(y)
+    
+    do j=2, m+1
+        
+        a(1,j)=xsum(j-1) !Atribui valores à primeira linha da matriz [a]
+    enddo
+    
+    do i=2, m+1
+  
+        do j=1, m+1
+            
+            a(i,j)=xsum(j+i-2)
+        enddo
+        b(i)=sum((/((x(k)**(i-1))*y(k), k=1,n)/)) ! Cria linhas 2 a 5 da matriz [a] e elementos 2 a 5 do vetor coluna [b].
+    enddo
+    
+    
+    call Gauss(a, b, p, m+1) !Resolve o sistema [a][p] = [b] para [p]. Transpõe a solução para que [p] se torne um vetor linha.
+    
+    
+! Solução (valores dos coeficientes) 
+
+    write (*,225)
+    write (*,226)(p(i),i=1,m+1)
+    
+    
+225 format ('Coeficientes P=') ! Imprime Coeficientes
+226 format (6f12.2)    
+    
+end subroutine RegressaoPolinomial
+
+
+!-------------------------------------------------------------------------------------------------------
+
+
+
+subroutine InterpLagrange()
+
+! Para este "Método Interpoladores" de Lagrange precisamos das seguintes variaáveis ou entradas
+
+! Determine o polinômio de Lagrange de quarta ordem que passa pelos pontos.
+
+! Variáveis de entrada: 
+
+!Reais:--
+
+! x Vetor com as coordenadas x dos pontos.
+
+! y Vetor com as coordenada y dos pontos.
+
+! Xinnter é o valor a ser interpolado
+
+! L (que é o lagrange que ajusta o valor a ser interpolado)
+
+! Variáveis de saída:
+
+! Yinter é o valor interpolado
+
+      	 implicit none
+
+
+       	 real(8), allocatable :: x(:), y(:), L(:)
+
+         real(8):: Xint, FuncLagrange, a
+
+         integer:: i, j, b
+
+         print*, "Diga o tamanho de x e y (quantidade de pontos)"
+
+         read*, b
+
+         allocate(x(b), y(b))
+
+         print*, "Forneça os pontos para achar a equação: "
+
+         do i=1, b
+         	print*, "Diga x e y: "
+         	read*, x(i), y(i)
+         end do
+
+        print*, "Diga o valor a ser interpolado: "
+	    read*, Xint
+
+        a=1; FuncLagrange = 0
+
+       do i=1, b
+          a=1
+          do j=1, b
+
+             if(j/=i) then
+                a = a*(Xint-x(j))/(x(i)-x(j))
+
+            end if
+
+
+           end do
+           FuncLagrange = FuncLagrange + a*y(i)
+        end do
+
+	    print*, "O valor interpolado foi Yinter: ", FuncLagrange
+        
+
+end subroutine InterpLagrange
+
+
+!-------------------------------------------------------------------------------------------------------
+
+
+
+subroutine MetodoRetangulo()
+
+!------------------------------------------
+!"Método do Retângulo" para calculo de integrais 
+!-------------------------------------------
+
+!Intervalo de integracao: [a, b]
+!Reais:-- 
+! a, b
+!Integral sobre a funcao "F"
+
+        implicit none
+
+        real(8):: a, b
+
+
+        interface 
+            
+            function F(x)
+                real(8) :: x
+            end  function
+
+        end interface
+
+
+        print*, "Forneça os valores do intervalo [a,b] de integração para integrar f(x): "
+
+        read*, a, b
+        
+        print*, "A integral da função no intevalo [", a, ",", b, "]é:", F(b)*(b-a)
+
+
+end subroutine MetodoRetangulo
+
+
+!-------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+subroutine MetPonCentral()
+
+
+!------------------------------------------
+!"Método do Ponto Central" para calculo de integrais 
+!-------------------------------------------
+
+!Intervalo de integracao: [a, b]
+!Reais: --
+! a, b
+!Integral sobre a funcao "F"
+
+
+        implicit none
+
+        real(8):: a, b, f
+
+
+
+        interface 
+            
+            function F(x)
+                real(8) :: x
+            end  function
+
+        end interface
+
+        print*, "Forneça os valores do intervalo [a,b] de integração para integrar f(x): "
+
+        read*, a, b
+
+        print*, "A integral da função no intevalo [", a, ",", b, "]é:", F((a+b)/2.0)*(b-a)
+
+
+end subroutine MetPonCentral
+
+
+
+
+
+
+
+!-------------------------------------------------------------------------------------------------------
+
+
+
+
+subroutine IntegralTrapezio(tol_ini)
+
+!------------------------------------------
+!"Método do Trapezio" para calculo de integrais 
+!-------------------------------------------
+
+!Intervalo de integracao: [a, b]
+
+!Reais:--
+!a, b
+!Integral sobre a funcao "F"
+!Derivada de "F": "Fder"
+! "h" Largura dos subintervalos
+! "soma" auxilia no calculo da integral
+! "delta" estimativa assintotica
+! "tol_ini" tolerancia maxima
+! "x(:)" armazena os pontos no Intervalo [a,b]
+
+!Inteiros:--
+! "N" numero de pontos
+
+
+        implicit none
+
+        real(8):: a, b, integral, h, soma, delta, tol_ini
+
+        real(8), allocatable :: x(:)
+
+        integer:: i, N
+
+
+
+        interface 
+            
+            function F(x)
+                real(8) :: x
+            end  function
+            
+            function Fder(x)
+                real(8) :: x
+            end  function
+
+        end interface
+
+        print*, "Forneça os valores a e b do intervalo [a,b] de integração para integrar f(x): "
+
+        read*, a, b
+
+
+        N=2 ! Dois pontos iniciais a e b
+        
+        delta = ceiling(((-(b-a)**2)/(12.0*N**2))*(Fder(b)-Fder(a))) ! Inicia delta
+        
+        do while(delta<tol_ini)
+        
+            N=N+1
+            delta = ceiling(((-(b-a)**2)/(12.0*N**2))*(Fder(b)-Fder(a)))
+            
+        enddo
+        
+        allocate(x(N)) ! Aloca a quantidade de pontos  
+
+        x(1) = a; x(n) = b
+
+        h =(b-a)/n  ! Largura dos subintervalos
+        
+        i=2 ! Começa em i=2 pois temos N=2 pontos iniciais 
+        
+        do while( x(i)/=b .and. i<=N)
+
+              x(i) = x(i-1)+h
+              i=i+1
+        end do
+
+        soma = 0 
+
+        do i=1, n
+
+            soma = soma + F(x(i))
+
+        end do
+
+        integral = (h/2.0)*(F(x(1))+F(x(n)))+h*soma
+
+        print*, "Quantidade de pontos: ", N
+        print*, "A integral da função no intevalo [", a, ",", b, "]é:", integral
+
+
+end subroutine IntegralTrapezio
+
+
+
+
+
+
+!-------------------------------------------------------------------------------------------------------
+
+
+
+end module tudo
+
+
