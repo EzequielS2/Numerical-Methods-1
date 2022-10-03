@@ -1,0 +1,118 @@
+
+
+
+
+
+
+
+
+ program Aula14
+
+         implicit none
+
+         real a, b, Dxy, h, denom, xnew
+
+        real, allocatable :: n(:), t(:)
+
+        integer i, tam, j
+
+
+
+
+        print*, "Forneça os valores do dominio: "
+
+        read*, a, b    ! Atribui o domínio às variáveis a e b
+
+
+        print*, "Diga o passo de integração: "
+
+        read*, h    ! a largura do passo de integração a h
+
+        tam = (b-a)/h      ! Define o tamanho do vetor
+
+        allocate(n(n))
+        allocate(t(n))
+
+        print*, "Forneça o valor inicial de y: "
+
+        read*, n(1)  ! Atribui a condição inicial ao primeiro ponto da solução
+
+        t(1) = a   ! Atribui a condição inicial ao primeiro ponto da solução
+
+        t(n) = b
+        
+        print*, "Valor n:", tam
+
+       do while(t(i)/=b)
+        do i=1, tam
+
+           t(i+1) = t(i) +h
+           
+           x=n(i)
+           
+           n(i+1) = n(i) + Dxy(t(i+1), n(1), n(i+1))*h
+           
+           ! Tem início o método de Newton.
+           
+           do j=1, 20
+
+              num = x +0.8*(x**(3/2.0))*(h) - 10*n(1)*(1-exp(-3*t(i+1)))*h - n(i)
+              
+              denom =  1 + 0.8*1.5*(x**(1/2.0))*h
+              
+              xnew = 1 - num/denom
+              
+              if((xnew-x)/x<0.0001) then !Verifica se o erro é pequeno o suficiente para que as iterações sejam interrompidas
+                   exit
+              else
+                x = xnew
+                
+              end if
+              
+           end do
+            
+            if(j==20) then
+            
+                      print*, "A solução não pode ser encontrada em t-", t(i)
+                      
+                      exit
+             end if
+             
+             ! Termina o método de Newton.
+             
+             n(i+1) = xnew   ! A solução obtida com o método de Newton é atribuída à solução da EDO no ponto seguinte.
+             
+              
+        end do
+       end do
+        do i=1, tam
+        
+           print*, "i:", i, "x: ", t(i), "y: ", n(i)
+        end do
+        
+        
+        
+
+
+
+end program Aula14
+
+
+
+real function Dxy(x, y, y1)    ! Definimos uma EDO para teste
+
+    real x, y, y1
+
+     Dxy = -0.8*y1**(3/2.0) + 10*y*(1-exp(-3*x))    ! exp(x) = e^x
+
+       return
+end function Dxy
+
+
+
+
+
+
+
+
+

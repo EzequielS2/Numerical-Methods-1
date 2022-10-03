@@ -1,0 +1,76 @@
+! Para este método precisamos das seguintes variaáveis ou entradas
+
+! Variáveis de entrada:
+
+! x Vetor com as coordenadas x dos pontos.
+
+! y Vetor com as coordenada y dos pontos.
+
+
+
+
+
+
+
+
+
+ program Aula14
+
+         implicit none
+
+         real Der2, f ! b(:) é o coeficiente do polinomio
+
+         real x(3), y(3)
+
+         integer i
+
+
+
+         print*, "Forneça os valores de x: "
+        print*, "----------------------------"
+        do i=1, 3
+
+         print*, "Diga x: "
+
+         read*, x(i)
+
+         y(i)= f(x(i))
+
+        end do
+
+
+
+        print*, "O valor da derivada é: ", Der2(x)
+        print*, "----------------------------------"
+
+
+
+end program Aula14
+
+
+
+real function f(a)    ! Definimos uma função para teste
+
+    real a
+
+     f = 3*a**2+2
+
+       return
+end function f
+
+
+real function Der2(a1)  ! essa função não retorna valor
+
+     real a1(3)
+
+
+      Der2 =(f(a1(3))-2*f(a1(2))+f(a1(1)))/((a1(2)-a1(1)))**2
+
+
+       return
+
+
+end function  Der2
+
+
+

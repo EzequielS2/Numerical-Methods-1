@@ -1,0 +1,99 @@
+
+
+
+
+
+
+
+
+ program Aula14
+
+         implicit none
+
+         real a, b, Dxy, h, inclinacaoEu, yEu, incliFin
+
+        real, allocatable :: x(:), y(:)
+
+        integer i, tam
+
+
+
+
+        print*, "Forneça os valores do dominio: "
+
+        read*, a, b    ! Atribui o domínio às variáveis a e b
+
+
+        print*, "Diga o passo de integração: "
+
+        read*, h    ! a largura do passo de integração a h
+
+        tam = (b-a)/h      ! Define o tamanho do vetor
+
+        allocate(x(tam))
+        allocate(y(tam))
+
+        print*, "Forneça o valor inicial de y: "
+
+        read*, y(1)  ! Atribui a condição inicial ao primeiro ponto da solução
+
+        x(1) = a   ! Atribui a condição inicial ao primeiro ponto da solução
+        print*, "------------------------"
+
+        print*, "Valores iniciais: ", "x:", x(1), "y:", y(1)
+
+        print*, "------------------------"
+
+        print*, "Valor n:", tam
+
+
+
+        do i=1, tam
+
+                x(i+1) = x(i) + h
+
+
+                yEu = y(i) + inclinacaoEu(x(i), y(i))*h
+
+                incliFin = Dxy(x(i+1), yEu)
+
+                y(i+1) = y(i) + (inclinacaoEu(x(i), y(i))+incliFin)*h/2.0
+
+       end do
+
+       do i=1, tam
+
+            print*, "i:", i, "x:", x(i), "y:", y(i)
+        end do
+
+
+end program Aula14
+
+
+
+real function Dxy(x, y)    ! Definimos uma EDO para teste
+
+    real x, y, y1
+
+     Dxy = -1.2*y + 7*(exp(-0.3*x))    ! exp(x) = e^x
+
+       return
+end function Dxy
+
+
+real function inclinacaoEu(x, y)
+
+              real x, y
+
+              inclinacaoEu = Dxy(x, y)
+
+              return
+
+end function inclinacaoEu
+
+
+
+
+
+
+
